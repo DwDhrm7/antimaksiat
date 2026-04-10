@@ -3,8 +3,6 @@
 
 **ANTIMAKSIAT.CO** is a high-end streetwear collective and e-commerce platform born from the strobe lights and basslines of the underground clubbing scene. We bridge the gap between floor-culture and premium editorial design for the generation that owns the night.
 
-![Antimaksiat Logo](public/favicon.ico)
-
 ---
 
 ## ⚡ The Experience
