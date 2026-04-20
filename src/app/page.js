@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState, useRef } from 'react';
-
+import { useProducts } from '../context/ProductContext';
+import { useAuth } from '../context/AuthContext';
 import Link from 'next/link';
 
 export default function Home() {
@@ -68,25 +69,17 @@ export default function Home() {
   };
 
   const manifestoImages = [
-    '/images/manifesto_1_1775655364694.png',
-    '/images/manifesto_2_1775655381856.png',
     '/images/manifesto_3_1775655403934.png',
-    '/images/manifesto_4_1775655424038.png',
-    '/images/manifesto_5_1775655440052.png'
+    '/images/baggy_silhouette_lookbook_1775802562337.png',
+    '/images/blokecore_street_crossroad_1775803089630.png',
+    '/images/gallery_chain_neon_1775798641607.png',
+    '/images/baggy_culture_hangout_1775803104700.png',
+    '/images/zipup_oversized_studio_1775802530734.png',
+    '/images/oversized_hoodie_baggy_pants_1775802496499.png'
   ];
 
-  const collectionData = [
-    { id: 1, name: 'TECHNO SYNDICATE', price: '$40', img: '/images/product_shirt_1775644302740.png', alt: 'Product 1' },
-    { id: 2, name: 'ACID HOUSE', price: '$40', img: '/images/product_shirt_2_1775644354289.png', alt: 'Product 2' },
-    { id: 3, name: 'MIDNIGHT ZIP-UP', price: '$75', img: '/images/product_hoodie_1775646087371.png', alt: 'Midnight Zip-Up Hoodie' },
-    { id: 4, name: 'PARACHUTE PANTS', price: '$80', img: '/images/product_pants_1775646050628.png', alt: 'Cyber Parachute Pants' },
-    { id: 5, name: 'NEO TRIBAL BEANIE', price: '$25', img: '/images/product_beanie_1775646068268.png', alt: 'Neo Tribal Beanie' },
-    { id: 6, name: 'ACID SHIELD GLASSES', price: '$35', img: '/images/product_glasses_1775646108360.png', alt: 'Acid Shield Glasses' },
-    { id: 7, name: 'CHROME TRIBAL TEE', price: '$45', img: '/images/product_7_1775655460477.png', alt: 'Chrome Tribal Tee', isNew: true },
-    { id: 8, name: 'BLOKECORE RACING JERSEY', price: '$60', img: '/images/product_8_jersey_1775655949884.png', alt: 'Blokecore Retro Jersey', isNew: true },
-    { id: 9, name: 'CYBER STEALTH PANTS', price: '$85', img: '/images/product_pants_1775646050628.png', alt: 'Cyber Stealth Pants' },
-    { id: 10, name: 'TRIBAL BEANIE REDUX', price: '$25', img: '/images/product_beanie_1775646068268.png', alt: 'Tribal Beanie Redux' }
-  ];
+  const { user, logout } = useAuth();
+  const { products: collectionData } = useProducts();
 
   useEffect(() => {
     if (isManifestoHovered) return;
@@ -152,7 +145,7 @@ export default function Home() {
       sections.forEach((section) => observer.unobserve(section));
       revealElements.forEach((el) => revealObserver.unobserve(el));
     };
-  }, []);
+  }, [collectionData]);
 
   const isLightSection = activeSection === 'about';
   const navTextColor = isLightSection ? 'var(--black)' : 'var(--white)';
@@ -177,6 +170,19 @@ export default function Home() {
           <a href="#collection" style={{ color: navTextColor, transition: 'color 0.3s' }} className={activeSection === 'collection' ? 'active' : ''}>Collection</a>
           <a href="#gallery" style={{ color: navTextColor, transition: 'color 0.3s' }} className={activeSection === 'gallery' ? 'active' : ''}>Gallery</a>
           <a href="#contact" style={{ color: navTextColor, transition: 'color 0.3s' }} className={activeSection === 'contact' ? 'active' : ''}>Contact</a>
+          {user ? (
+            <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+              {user.role === 'admin' && <Link href="/admin" style={{ color: '#8b0000', fontFamily: 'var(--font-display)', fontSize: '1.2rem', textDecoration: 'none' }}>ADMIN</Link>}
+              <button onClick={logout} style={{ background: 'transparent', border: 'none', color: navTextColor, fontFamily: 'var(--font-display)', fontSize: '1.2rem', cursor: 'pointer', textDecoration: 'underline' }}>LOGOUT</button>
+            </div>
+          ) : (
+            <Link href="/login" style={{ color: navTextColor, transition: 'color 0.3s', display: 'flex', alignItems: 'center' }} aria-label="Login">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+            </Link>
+          )}
         </div>
       </nav>
 
@@ -264,7 +270,7 @@ export default function Home() {
                       key={src}
                       src={src}
                       alt={`Rave youth ${index + 1}`}
-                      className={`transition-opacity duration-1000 ease-in-out ${index === manifestoIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'}`}
+                      className={index === manifestoIndex ? 'manifesto-img-active' : 'manifesto-img-hidden'}
                     />
                   ))}
                   <div className={`manifesto-flash ${flash ? 'active' : ''}`}></div>
@@ -292,7 +298,7 @@ export default function Home() {
                     <img src={item.img} alt={item.alt} />
                     <div className="product-info">
                       <span>{item.name}</span>
-                      <span>{item.price}</span>
+                      <span>${item.price}</span>
                     </div>
                   </div>
                 </div>
@@ -312,12 +318,12 @@ export default function Home() {
             <p className="gallery-subtitle delay-100">Candid fragments of the underground. Captured moments from the 69 A.M Society.</p>
           </div>
           <div className="gallery-grid">
-            <div className="gallery-item reveal-scale"><img src="/images/gallery_rave_crowd_1775798606083.png" alt="Warehouse Rave Setup" /></div>
-            <div className="gallery-item reveal-scale delay-100"><img src="/images/gallery_streetwear_flash_1775798622177.png" alt="Late Night Streetwear" /></div>
-            <div className="gallery-item reveal-scale delay-200"><img src="/images/gallery_chain_neon_1775798641607.png" alt="Chain Accessories Details" /></div>
-            <div className="gallery-item reveal-scale delay-100"><img src={manifestoImages[0]} alt="Manifesto Archival" /></div>
-            <div className="gallery-item reveal-scale delay-200"><img src="/images/gallery_club_smoke_1775798655884.png" alt="Abandoned Club Interior" /></div>
-            <div className="gallery-item reveal-scale delay-300"><img src={manifestoImages[1]} alt="69 AM Society" /></div>
+            <div className="gallery-item reveal-scale"><img src="/images/blokecore_street_crossroad_1775803089630.png" alt="Shibuya Crossroad Squad" /></div>
+            <div className="gallery-item reveal-scale delay-100"><img src="/images/y2k_club_squad_baggy_1775803071531.png" alt="Cyberia Club Mob" /></div>
+            <div className="gallery-item reveal-scale delay-200"><img src="/images/gallery_streetwear_flash_1775798622177.png" alt="Late Night Bloke Core" /></div>
+            <div className="gallery-item reveal-scale delay-100"><img src="/images/baggy_culture_hangout_1775803104700.png" alt="Urban Concrete Hangout" /></div>
+            <div className="gallery-item reveal-scale delay-200"><img src="/images/blokecore_baggy_football_1775802731932.png" alt="Football Heritage Archive" /></div>
+            <div className="gallery-item reveal-scale delay-300"><img src="/images/blokecore_racing_baggy_1775802748216.png" alt="Racing Culture Moto" /></div>
           </div>
         </section>
 

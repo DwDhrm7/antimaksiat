@@ -2,19 +2,31 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { getProductById } from '../../../data/products';
+import { useRouter, usePathname } from 'next/navigation';
+import { useAuth } from '../../../context/AuthContext';
+import { useProducts } from '../../../context/ProductContext';
 
 export default function ProductDetail({ params }) {
+  const { user } = useAuth();
+  const { products } = useProducts();
+  const router = useRouter();
+  const pathname = usePathname();
+
   // Safe unwrapping for Next.js 15+ dynamic params
   const unwrappedParams = React.use ? React.use(params) : params;
   const id = unwrappedParams?.id;
-  const product = getProductById(id);
+  
+  const product = products.find(p => p.id === id);
   const [selectedSize, setSelectedSize] = useState('');
   const [isSecuring, setIsSecuring] = useState(false);
   const [secured, setSecured] = useState(false);
   const [showBack, setShowBack] = useState(false);
 
   const handleSecureItem = () => {
+    if (!user) {
+      router.push(`/login?redirect=${pathname}`);
+      return;
+    }
     if (!selectedSize) {
       alert("WARNING: PLEASE SELECT A SIZE BEFORE SECURING ITEM");
       return;

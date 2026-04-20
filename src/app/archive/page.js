@@ -2,10 +2,10 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { getProducts } from '../../data/products';
+import { useProducts } from '../../context/ProductContext';
 
 export default function Archive() {
-  const allProducts = getProducts();
+  const { products: allProducts } = useProducts();
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('All');
   const [sort, setSort] = useState('default');
